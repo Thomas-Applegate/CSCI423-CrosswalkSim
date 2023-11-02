@@ -1,9 +1,19 @@
+#include "sim.h"
+#include <iostream>
+
 int main(int argc, char** argv)
 {
-#ifdef DEBUG
+	try
+	{
+	#ifdef DEBUG
 
-#else
+	#else
 
-#endif
+	#endif
+	}catch(const std::exception& e)
+	{
+		std::cout << e.what() << "\n";
+		return -1;
+	}
 	return 0;
 }
