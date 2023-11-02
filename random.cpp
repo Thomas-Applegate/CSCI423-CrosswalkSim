@@ -13,11 +13,14 @@ double random::operator()()
 {
 	if(m_rfile.is_open()) //usefile
 	{
-		
+		double ret;
+		m_rfile >> ret;
+		return ret;
 	}else{//use prng
-		
+		static std::uniform_real_distribution
+			dist(std::numeric_limits<double>::lowest(), 1.0);
+		return dist(m_prng);
 	}
-	return -1;
 }
 
 void random::use_prng()
