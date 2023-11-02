@@ -14,7 +14,11 @@ public:
 	
 	void insert_data_point(const T& x)
 	{
-		//TODO
+		i++;
+		T xlast = xi;
+		T vlast = vi;
+		xi = xlast + (1/(T)i)*(x-xlast);
+		vi = vlast + ((i-1)/(T)i)*(x-xlast)*(x-xlast);
 	}
 	
 	T mean() const { return xi; }
