@@ -1,6 +1,6 @@
 -- premake5.lua
 workspace "CrosswalkSim"
-   configurations { "debug", "release" }
+   configurations { "release", "debug" }
 
 project "SIM"
    kind "ConsoleApp"
