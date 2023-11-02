@@ -26,7 +26,12 @@
 *.a
 *.lib
 
+#makefiles
+*.make
+Makefile
+
 # Executables
 *.exe
 *.out
 *.app
+bin/*
