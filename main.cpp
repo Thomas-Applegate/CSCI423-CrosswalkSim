@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		sim->~simulator();
 	}catch(const std::exception& e)
 	{
-		std::cout << e.what() << "\n";
+		std::cout << "Exception thrown: " << e.what() << "\n";
 		return -1;
 	}
 	return 0;
