@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 		}else
 		{
 			#ifndef DEBUG
-			std::cout << "Error: invalid number of arguments: trace files not provided\n";
+			std::cout << "Error: invalid number of arguments: trace files or N not provided\n";
 			return -1;
 			#else
 			sim = std::make_unique<simulator>(); //use builtin prng in debug
