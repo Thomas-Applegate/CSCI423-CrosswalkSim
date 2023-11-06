@@ -2,11 +2,11 @@
 #include <fstream>
 #include <random>
 
-class random
+class Random
 {
 public:
-	random();
-	random(const std::string& s);
+	Random();
+	Random(const std::string& s);
 	
 	double operator()();
 	
