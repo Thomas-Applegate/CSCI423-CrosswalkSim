@@ -10,6 +10,8 @@ class simulator
 public:
 #ifdef DEBUG
 	simulator();
+#else
+	simulator() = delete;
 #endif
 	simulator(const std::string& auto_random, const std::string& ped_random,
 		const std::string& button_random);
