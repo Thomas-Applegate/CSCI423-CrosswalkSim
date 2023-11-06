@@ -6,7 +6,7 @@ template<typename T>
 class welford
 {
 public:
-	welford() : i(0), xi(0), vi(0) {}
+	welford() noexcept : i(0), xi(0), vi(0) {}
 	welford(const std::initializer_list<T>& list) : welford()
 	{
 		for(const T& x : list) insert_data_point(x);

@@ -6,7 +6,7 @@ project "SIM"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++17"
-   targetdir "bin/%{cfg.buildcfg}"
+   targetdir "."
 
    files { "**.h", "**.cpp" }
 

@@ -35,3 +35,4 @@ Makefile
 *.out
 *.app
 bin/*
+SIM
