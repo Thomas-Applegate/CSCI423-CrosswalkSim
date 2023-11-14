@@ -2,8 +2,17 @@
 #include "event.h"
 
 #ifdef DEBUG
-simulator::simulator() : m_event_list(), m_auto_random(), m_ped_random(),
-	m_button_random(), m_clock(0.0), m_Da(), m_Dp() {}
+#include <random>
+
+static int s_gen_seed()
+{
+	static std::random_device rdev;
+	return rdev();
+}
+
+simulator::simulator() : m_event_list(), m_auto_random(s_gen_seed()),
+	m_ped_random(s_gen_seed()), m_button_random(s_gen_seed()), m_clock(0.0),
+	m_Da(), m_Dp() {}
 #endif
 
 simulator::simulator(const std::string& auto_random,

@@ -5,12 +5,12 @@
 class Random
 {
 public:
-	Random();
+	Random(int seed = 0);
 	Random(const std::string& s);
 	
 	double operator()();
 	
-	void use_prng();
+	void use_prng(int seed = 0);
 	void use_file(const std::string& s);
 	
 	double uniform(double a, double b);
@@ -19,6 +19,6 @@ public:
 	long geometric(double p);
 	bool bernouli(double p);
 private:
-	std::random_device m_prng;
+	std::default_random_engine m_prng;
 	std::ifstream m_rfile;
 };

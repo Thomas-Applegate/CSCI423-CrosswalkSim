@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cmath>
 
-Random::Random() : m_prng(), m_rfile()
+Random::Random(int seed) : m_prng(seed), m_rfile()
 {
 	m_rfile.exceptions(m_rfile.failbit | m_rfile.badbit | m_rfile.eofbit);
 }
@@ -25,9 +25,10 @@ double Random::operator()()
 	}
 }
 
-void Random::use_prng()
+void Random::use_prng(int seed)
 {
 	m_rfile.close();
+	m_prng.seed(seed);
 }
 
 void Random::use_file(const std::string& s)

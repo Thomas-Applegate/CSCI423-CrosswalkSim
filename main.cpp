@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 	if(argc < 2)
 	{
 		std::cout << "Error: invalid number of argumnets: N not provided\n";
-		return -1;
+		return 1;
 	}
 	
 	try
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 		{
 			#ifndef DEBUG
 			std::cout << "Error: invalid number of arguments: trace files or N not provided\n";
-			return -1;
+			return 1;
 			#else
 			sim = new (buff) simulator(); //use builtin prng in debug
 			#endif
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	}catch(const std::exception& e)
 	{
 		std::cout << "Exception thrown: " << e.what() << "\n";
-		return -1;
+		return 2;
 	}
 	return 0;
 }
