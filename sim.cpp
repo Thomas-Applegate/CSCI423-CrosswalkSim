@@ -4,9 +4,9 @@
 #ifdef DEBUG
 #include <random>
 
-static int s_gen_seed()
+int s_gen_seed()
 {
-	static std::random_device rdev;
+	std::random_device rdev;
 	return rdev();
 }
 
@@ -24,9 +24,9 @@ void simulator::run(unsigned int N)
 {
 	unsigned int N_auto = N - 1;
 	unsigned int N_ped = N -1;
-	m_event_list.emplace(m_ped_random.exponential(6), event::Type::ped_arrival,
+	m_event_list.emplace(m_ped_random.exponential(1.0/6.0), event::Type::ped_arrival,
 		m_ped_random.uniform(2.6, 4.1));
-	m_event_list.emplace(m_auto_random.exponential(8), event::Type::auto_arrival,
+	m_event_list.emplace(m_auto_random.exponential(1.0/8.0), event::Type::auto_arrival,
 		m_auto_random.uniform(25, 35));
 	
 	while(!m_event_list.empty())
@@ -39,7 +39,7 @@ void simulator::run(unsigned int N)
 			case event::Type::auto_arrival:
 				if(N_auto > 0)
 				{
-					m_event_list.emplace(m_clock + m_auto_random.exponential(8),
+					m_event_list.emplace(m_clock + m_auto_random.exponential(1.0/8.0),
 						event::Type::auto_arrival, m_auto_random.uniform(25, 35));
 					N_auto--;
 				}
@@ -47,7 +47,7 @@ void simulator::run(unsigned int N)
 			case event::Type::ped_arrival:
 				if(N_ped > 0)
 				{
-					m_event_list.emplace(m_clock + m_ped_random.exponential(6),
+					m_event_list.emplace(m_clock + m_ped_random.exponential(1.0/6.0),
 						event::Type::ped_arrival, m_ped_random.uniform(2.6, 4.1));
 					N_ped--;
 				}
