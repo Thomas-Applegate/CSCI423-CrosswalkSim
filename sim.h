@@ -5,6 +5,8 @@
 #include "welford.h"
 #include <string>
 
+enum class color {red, yellow, green };
+
 class simulator
 {
 public:
@@ -30,4 +32,8 @@ private:
 	double m_clock;
 	welford<double> m_Da;
 	welford<double> m_Dp;
+	
+	color m_color = color::green;
+	bool m_walk_signal = false;
+	bool m_button_pressed = false;
 };
