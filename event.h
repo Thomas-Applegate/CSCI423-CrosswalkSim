@@ -18,7 +18,7 @@ public:
 		ped_exit
 	};
 	
-	event(double at, Type type, double speed = -1.0) noexcept;
+	event(double at, Type type, int id = -1, double speed = -1.0) noexcept;
 	
 	double at() const;
 	Type type() const;
@@ -26,7 +26,9 @@ public:
 	
 	friend bool operator<(const event& a, const event& b);
 private:
+	static int next_id;
 	double m_at;
 	Type m_type;
+	int m_id;
 	double m_speed;
 };
