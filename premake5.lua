@@ -13,6 +13,7 @@ project "SIM"
  filter "configurations:release"
       defines { "NDEBUG" }
       optimize "On"
+      --flags {"LinkTimeOptimization"}
 
    filter "configurations:debug"
       defines { "DEBUG" }
