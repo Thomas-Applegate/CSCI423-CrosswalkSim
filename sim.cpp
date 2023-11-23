@@ -1,7 +1,10 @@
 #include "sim.h"
 #include "event.h"
 
+entity_info::entity_info(double at, double speed) : at(at), speed(speed) {}
+
 #ifdef DEBUG
+#include <stdexcept>
 #include <random>
 
 int s_gen_seed()
@@ -45,6 +48,7 @@ void simulator::run(unsigned int N)
 					event::Type::auto_arrival, m_auto_random.uniform(36.67, 51.33));
 				N_auto--;
 			}
+			m_autos.try_emplace(current_event->m_id, current_event->m_at, current_event->m_speed);
 			break;
 		case event::Type::ped_arrival:
 			if(N_ped > 0)
@@ -53,6 +57,7 @@ void simulator::run(unsigned int N)
 					event::Type::ped_arrival, m_ped_random.uniform(2.6, 4.1));
 				N_ped--;
 			}
+			m_peds.try_emplace(current_event->m_id, current_event->m_at, current_event->m_speed);
 			break;
 		case event::Type::ped_at_button:
 			break;
@@ -65,8 +70,24 @@ void simulator::run(unsigned int N)
 		case event::Type::red_expires:
 			break;
 		case event::Type::auto_exit:
+		#ifdef DEBUG
+			if(m_autos.erase(current_event->m_id) == 0)
+			{
+				throw std::logic_error("auto not erased from map, entity_info may have gotten lost");
+			}
+		#else
+			m_autos.erase(current_event->m_id);
+		#endif
 			break;
 		case event::Type::ped_exit:
+		#ifdef DEBUG
+			if(m_peds.erase(current_event->m_id) == 0)
+			{
+				throw std::logic_error("ped not erased from map, entity_info may have gotten lost");
+			}
+		#else
+			m_peds.erase(current_event->m_id);
+		#endif
 			break;
 		}
 		

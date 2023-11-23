@@ -4,8 +4,16 @@
 #include "event.h"
 #include "welford.h"
 #include <string>
+#include <unordered_map>
 
 enum class color {red, yellow, green };
+
+struct entity_info
+{
+	entity_info(double at, double speed);
+	double at;
+	double speed;
+};
 
 class simulator
 {
@@ -36,4 +44,7 @@ private:
 	color m_color;
 	bool m_walk_signal;
 	bool m_button_pressed;
+	
+	std::unordered_map<int, entity_info> m_peds;
+	std::unordered_map<int, entity_info> m_autos;
 };
