@@ -1,10 +1,10 @@
 #include "sim.h"
 #include "event.h"
+#include <stdexcept>
 
 entity_info::entity_info(double at, double speed) : at(at), speed(speed) {}
 
 #ifdef DEBUG
-#include <stdexcept>
 #include <random>
 
 int s_gen_seed()
@@ -24,6 +24,17 @@ simulator::simulator(const std::string& auto_random,
 	: m_event_list(), m_auto_random(auto_random), m_ped_random(ped_random),
 	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp(),
 	m_color(color::green), m_walk_signal(false), m_button_pressed(false) {}
+	
+double simulator::m_compute_ped_delay(entity_info i)
+{
+	return (m_clock - i.at) - (422.0/i.speed);
+}
+
+double simulator::m_compute_auto_delay(entity_info i)
+{
+	//TODO
+	return -1.0;
+}
 
 void simulator::run(unsigned int N)
 {
@@ -70,24 +81,26 @@ void simulator::run(unsigned int N)
 		case event::Type::red_expires:
 			break;
 		case event::Type::auto_exit:
-		#ifdef DEBUG
-			if(m_autos.erase(current_event->m_id) == 0)
+		{
+			auto it = m_autos.find(current_event->m_id);
+			if(it == m_autos.end())
 			{
-				throw std::logic_error("auto not erased from map, entity_info may have gotten lost");
+				throw std::logic_error("auto not found in map, entity_info may have gotten lost");
 			}
-		#else
-			m_autos.erase(current_event->m_id);
-		#endif
+			m_Da.insert_data_point(m_compute_auto_delay(it->second));
+			m_autos.erase(it);
+		}
 			break;
 		case event::Type::ped_exit:
-		#ifdef DEBUG
-			if(m_peds.erase(current_event->m_id) == 0)
+		{
+			auto it = m_peds.find(current_event->m_id);
+			if(it == m_peds.end())
 			{
-				throw std::logic_error("ped not erased from map, entity_info may have gotten lost");
+				throw std::logic_error("ped not found in map, entity_info may have gotten lost");
 			}
-		#else
-			m_peds.erase(current_event->m_id);
-		#endif
+			m_Dp.insert_data_point(m_compute_ped_delay(it->second));
+			m_peds.erase(it);
+		}
 			break;
 		}
 		
