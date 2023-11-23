@@ -17,15 +17,15 @@ simulator::simulator() : m_event_list(), m_auto_random(s_gen_seed()),
 	m_ped_random(s_gen_seed()), m_button_random(s_gen_seed()), m_clock(0.0),
 	m_Da(), m_Dp(), m_color(color::green), m_walk_signal(false),
 	m_button_pressed(false), m_green_timer(-1.0), m_yellow_timer(-1.0),
-	m_red_timer(-1.0), m_peds(), m_autos(), m_ped_queue() {}
+	m_red_timer(-1.0), m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue() {}
 #endif
 
 simulator::simulator(const std::string& auto_random, const std::string& ped_random, const std::string& button_random)
 	: m_event_list(), m_auto_random(auto_random), m_ped_random(ped_random),
 	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp(),
 	m_color(color::green), m_walk_signal(false), m_button_pressed(false),
-	m_green_timer(-1.0), m_yellow_timer(-1.0), m_red_timer(-1.0), m_peds(),
-	m_autos(), m_ped_queue() {}
+	m_green_timer(-1.0), m_yellow_timer(-1.0), m_red_timer(-1.0),
+	m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue() {}
 	
 double simulator::m_compute_ped_delay(entity_info i)
 {
@@ -45,6 +45,7 @@ void simulator::m_start_green_timer()
 		m_button_pressed = false;
 		m_walk_signal = false;
 		m_color = color::green;
+		m_ped_cross_count = 0;
 		m_green_timer = m_clock + 35.0;
 		m_event_list.emplace(m_green_timer, event::Type::green_expires);
 	}
@@ -67,6 +68,17 @@ void simulator::m_start_red_timer()
 		m_color = color::red;
 		m_red_timer = m_clock + 18.0;
 		m_event_list.emplace(m_red_timer, event::Type::red_expires);
+	}
+}
+
+double simulator::m_button_push_prob()
+{
+	if(m_ped_queue.size() == 0)
+	{
+		return 0.9375;
+	}else
+	{
+		return 1.0 / (double)(m_ped_queue.size()+1);
 	}
 }
 
@@ -107,6 +119,31 @@ void simulator::run(unsigned int N)
 			m_peds.try_emplace(current_event->m_id, current_event->m_at, current_event->m_speed);
 			break;
 		case event::Type::ped_at_button:
+			if(m_walk_signal)
+			{
+				double time_left = m_red_timer - m_clock;
+				if(time_left >= 46.0/current_event->m_speed
+					&& m_ped_cross_count < 20)
+				{//cross
+					m_ped_cross_count++;
+					m_event_list.emplace(m_clock + 46.0/current_event->m_speed,
+						event::Type::ped_exit, current_event->m_speed, current_event->m_id);
+				}else //can't cross
+				{
+					m_ped_queue.insert(*current_event);
+				}
+			}else //can't cross
+			{
+				if(m_button_random.bernouli(m_button_push_prob()))
+				{
+					m_ped_queue.insert(*current_event);
+					m_button_pressed = true;
+					if(m_green_timer < 0.0) m_start_yellow_timer();
+				}else
+				{
+					m_ped_queue.insert(*current_event);
+				}
+			}
 			break;
 		case event::Type::ped_impatient:
 			break;
@@ -124,10 +161,6 @@ void simulator::run(unsigned int N)
 		case event::Type::red_expires:
 			m_red_timer = -1.0;
 			m_start_green_timer();
-			break;
-		case event::Type::button_press:
-			m_button_pressed = true;
-			if(m_green_timer < 0.0) m_start_yellow_timer();
 			break;
 		case event::Type::auto_exit:
 		{

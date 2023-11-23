@@ -47,6 +47,7 @@ private:
 	double m_green_timer;
 	double m_yellow_timer;
 	double m_red_timer;
+	int m_ped_cross_count;
 	
 	std::unordered_map<int, entity_info> m_peds;
 	std::unordered_map<int, entity_info> m_autos;
@@ -58,4 +59,6 @@ private:
 	void m_start_green_timer();
 	void m_start_yellow_timer();
 	void m_start_red_timer();
+	
+	double m_button_push_prob();
 };

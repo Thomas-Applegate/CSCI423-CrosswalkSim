@@ -16,7 +16,6 @@ public:
 		red_expires,
 		auto_exit,
 		ped_exit,
-		button_press
 	};
 	
 	event(double at, Type type, double speed = -1.0, int id = -1) noexcept;
