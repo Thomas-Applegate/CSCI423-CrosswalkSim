@@ -36,6 +36,32 @@ double simulator::m_compute_auto_delay(entity_info i)
 	return -1.0;
 }
 
+void simulator::m_start_green_timer()
+{
+	if(m_green_timer < 0)
+	{
+		m_green_timer = m_clock + 35.0;
+		m_event_list.emplace(m_green_timer, event::Type::green_expires);
+	}
+}
+void simulator::m_start_yellow_timer()
+{
+	if(m_yellow_timer < 0)
+	{
+		m_yellow_timer = m_clock + 8.0;
+		m_event_list.emplace(m_yellow_timer, event::Type::yellow_expires);
+	}
+}
+
+void simulator::m_start_red_timer()
+{
+	if(m_red_timer < 0)
+	{
+		m_red_timer = m_clock + 18.0;
+		m_event_list.emplace(m_red_timer, event::Type::red_expires);
+	}
+}
+
 void simulator::run(unsigned int N)
 {
 	unsigned int N_auto = N - 1;
@@ -75,10 +101,27 @@ void simulator::run(unsigned int N)
 		case event::Type::ped_impatient:
 			break;
 		case event::Type::green_expires:
+			//still need to handle case when green timer has expired
+			//but the button has not yet been pressed
+			m_green_timer = -1.0;
+			if(m_button_pressed)
+			{
+				m_color = color::yellow;
+				m_start_yellow_timer();
+			}
 			break;
 		case event::Type::yellow_expires:
+			m_yellow_timer = -1.0;
+			m_walk_signal = true;
+			m_color = color::red;
+			m_start_red_timer();
 			break;
 		case event::Type::red_expires:
+			m_red_timer = -1.0;
+			m_button_pressed = false;
+			m_walk_signal = false;
+			m_color = color::green;
+			m_start_green_timer();
 			break;
 		case event::Type::auto_exit:
 		{
