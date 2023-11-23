@@ -12,13 +12,15 @@ int s_gen_seed()
 
 simulator::simulator() : m_event_list(), m_auto_random(s_gen_seed()),
 	m_ped_random(s_gen_seed()), m_button_random(s_gen_seed()), m_clock(0.0),
-	m_Da(), m_Dp() {}
+	m_Da(), m_Dp(), m_color(color::green), m_walk_signal(false),
+	m_button_pressed(false) {}
 #endif
 
 simulator::simulator(const std::string& auto_random,
 	const std::string& ped_random, const std::string& button_random)
 	: m_event_list(), m_auto_random(auto_random), m_ped_random(ped_random),
-	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp() {}
+	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp(),
+	m_color(color::green), m_walk_signal(false), m_button_pressed(false) {}
 
 void simulator::run(unsigned int N)
 {

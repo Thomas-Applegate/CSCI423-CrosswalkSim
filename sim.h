@@ -33,7 +33,7 @@ private:
 	welford<double> m_Da;
 	welford<double> m_Dp;
 	
-	color m_color = color::green;
-	bool m_walk_signal = false;
-	bool m_button_pressed = false;
+	color m_color;
+	bool m_walk_signal;
+	bool m_button_pressed;
 };
