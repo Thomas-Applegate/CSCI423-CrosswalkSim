@@ -19,7 +19,7 @@ public:
 		button_press
 	};
 	
-	event(double at, Type type, int id = -1, double speed = -1.0) noexcept;
+	event(double at, Type type, double speed = -1.0, int id = -1) noexcept;
 	
 	double at() const;
 	Type type() const;

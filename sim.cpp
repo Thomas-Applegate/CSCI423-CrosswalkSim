@@ -100,6 +100,8 @@ void simulator::run(unsigned int N)
 					event::Type::ped_arrival, m_ped_random.uniform(2.6, 4.1));
 				N_ped--;
 			}
+			m_event_list.emplace(m_clock + 376.0/current_event->m_speed,
+				event::Type::ped_at_button, current_event->m_speed, current_event->m_id);
 			m_peds.try_emplace(current_event->m_id, current_event->m_at, current_event->m_speed);
 			break;
 		case event::Type::ped_at_button:

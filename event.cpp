@@ -2,7 +2,7 @@
 
 int event::next_id = 0;
 
-event::event(double at, event::Type type, int id, double speed) noexcept
+event::event(double at, event::Type type, double speed, int id) noexcept
 	: m_at(at), m_type(type), m_id(id), m_speed(speed)
 {
 	if(type == Type::auto_arrival || type == Type::ped_arrival)
