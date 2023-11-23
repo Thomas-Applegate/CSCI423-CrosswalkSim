@@ -26,10 +26,10 @@ void simulator::run(unsigned int N)
 {
 	unsigned int N_auto = N - 1;
 	unsigned int N_ped = N -1;
-	m_event_list.emplace(m_ped_random.exponential(1.0/6.0), event::Type::ped_arrival,
+	m_event_list.emplace(m_ped_random.exponential(10.0), event::Type::ped_arrival,
 		m_ped_random.uniform(2.6, 4.1));
-	m_event_list.emplace(m_auto_random.exponential(1.0/8.0), event::Type::auto_arrival,
-		m_auto_random.uniform(25, 35));
+	m_event_list.emplace(m_auto_random.exponential(7.5), event::Type::auto_arrival,
+		m_auto_random.uniform(36.67, 51.33));
 	
 	while(!m_event_list.empty())
 	{
@@ -38,36 +38,36 @@ void simulator::run(unsigned int N)
 		
 		switch(current_event->m_type)
 		{
-			case event::Type::auto_arrival:
-				if(N_auto > 0)
-				{
-					m_event_list.emplace(m_clock + m_auto_random.exponential(1.0/8.0),
-						event::Type::auto_arrival, m_auto_random.uniform(25, 35));
-					N_auto--;
-				}
-				break;
-			case event::Type::ped_arrival:
-				if(N_ped > 0)
-				{
-					m_event_list.emplace(m_clock + m_ped_random.exponential(1.0/6.0),
-						event::Type::ped_arrival, m_ped_random.uniform(2.6, 4.1));
-					N_ped--;
-				}
-				break;
-			case event::Type::ped_at_button:
-				break;
-			case event::Type::ped_impatient:
-				break;
-			case event::Type::green_expires:
-				break;
-			case event::Type::yellow_expires:
-				break;
-			case event::Type::red_expires:
-				break;
-			case event::Type::auto_exit:
-				break;
-			case event::Type::ped_exit:
-				break;
+		case event::Type::auto_arrival:
+			if(N_auto > 0)
+			{
+				m_event_list.emplace(m_clock + m_auto_random.exponential(7.5),
+					event::Type::auto_arrival, m_auto_random.uniform(36.67, 51.33));
+				N_auto--;
+			}
+			break;
+		case event::Type::ped_arrival:
+			if(N_ped > 0)
+			{
+				m_event_list.emplace(m_clock + m_ped_random.exponential(10.0),
+					event::Type::ped_arrival, m_ped_random.uniform(2.6, 4.1));
+				N_ped--;
+			}
+			break;
+		case event::Type::ped_at_button:
+			break;
+		case event::Type::ped_impatient:
+			break;
+		case event::Type::green_expires:
+			break;
+		case event::Type::yellow_expires:
+			break;
+		case event::Type::red_expires:
+			break;
+		case event::Type::auto_exit:
+			break;
+		case event::Type::ped_exit:
+			break;
 		}
 		
 		m_event_list.erase(current_event);
