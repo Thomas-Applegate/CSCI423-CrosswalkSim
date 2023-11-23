@@ -44,12 +44,13 @@ private:
 	color m_color;
 	bool m_walk_signal;
 	bool m_button_pressed;
-	double m_green_timer = -1.0;
-	double m_yellow_timer = -1.0;
-	double m_red_timer = -1.0;
+	double m_green_timer;
+	double m_yellow_timer;
+	double m_red_timer;
 	
 	std::unordered_map<int, entity_info> m_peds;
 	std::unordered_map<int, entity_info> m_autos;
+	std::set<event> m_ped_queue;
 	
 	double m_compute_ped_delay(entity_info i);
 	double m_compute_auto_delay(entity_info i);

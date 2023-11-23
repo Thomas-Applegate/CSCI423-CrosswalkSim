@@ -16,14 +16,16 @@ int s_gen_seed()
 simulator::simulator() : m_event_list(), m_auto_random(s_gen_seed()),
 	m_ped_random(s_gen_seed()), m_button_random(s_gen_seed()), m_clock(0.0),
 	m_Da(), m_Dp(), m_color(color::green), m_walk_signal(false),
-	m_button_pressed(false) {}
+	m_button_pressed(false), m_green_timer(-1.0), m_yellow_timer(-1.0),
+	m_red_timer(-1.0), m_peds(), m_autos(), m_ped_queue() {}
 #endif
 
-simulator::simulator(const std::string& auto_random,
-	const std::string& ped_random, const std::string& button_random)
+simulator::simulator(const std::string& auto_random, const std::string& ped_random, const std::string& button_random)
 	: m_event_list(), m_auto_random(auto_random), m_ped_random(ped_random),
 	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp(),
-	m_color(color::green), m_walk_signal(false), m_button_pressed(false) {}
+	m_color(color::green), m_walk_signal(false), m_button_pressed(false),
+	m_green_timer(-1.0), m_yellow_timer(-1.0), m_red_timer(-1.0), m_peds(),
+	m_autos(), m_ped_queue() {}
 	
 double simulator::m_compute_ped_delay(entity_info i)
 {
