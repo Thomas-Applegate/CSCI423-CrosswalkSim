@@ -3,13 +3,13 @@
 #include <cmath>
 #include <iostream>
 
-Random::Random(int seed) : m_prng(seed), m_rfile()
-{
-	m_rfile.exceptions(m_rfile.failbit | m_rfile.badbit | m_rfile.eofbit);
-}
+Random::Random(int seed) : m_prng(seed), m_rfile() {}
 Random::Random(const std::string& s) : m_prng(), m_rfile(s)
 {
-	m_rfile.exceptions(m_rfile.failbit | m_rfile.badbit | m_rfile.eofbit);
+	if(!m_rfile.good())
+	{
+		throw std::runtime_error("cannot open file: " + s);
+	}
 }
 
 double Random::operator()()
@@ -18,9 +18,13 @@ double Random::operator()()
 	{
 		if(m_rfile.eof())
 		{
-			std::cerr << "ERROR: random file is eof\n";
+			throw std::runtime_error("random file is eof");
 		}
-		double ret;
+		if(m_rfile.fail())
+		{
+			throw std::runtime_error("random file has failed, but is not eof");
+		}
+		double ret = 1e-6;
 		m_rfile >> ret;
 		return ret;
 	}else{//use prng
