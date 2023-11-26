@@ -162,7 +162,7 @@ void simulator::run(unsigned int N)
 				auto it = m_ped_queue.begin();
 				while(m_ped_cross_count < 20)
 				{
-					if(it != m_ped_queue.end()) break;
+					if(it == m_ped_queue.end()) break;
 					if(time_left >= 46.0/it->m_speed)
 					{
 						m_ped_cross_count++;

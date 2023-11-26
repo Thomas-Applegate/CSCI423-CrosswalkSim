@@ -28,7 +28,7 @@ double Random::operator()()
 		m_rfile >> ret;
 		return ret;
 	}else{//use prng
-		std::uniform_real_distribution dist(std::numeric_limits<double>::lowest(), 1.0);
+		std::uniform_real_distribution dist(1e-10, 1.0);
 		return dist(m_prng);
 	}
 }
@@ -48,30 +48,35 @@ void Random::use_file(const std::string& s)
 double Random::uniform(double a, double b)
 {
 	if(a >= b) throw std::invalid_argument("a must be less than b");
-	return a + (b-1) * (*this)();
+	double r = (*this)();
+	return a + (b-a) * r;
 }
 
 long Random::equilikely(long a, long b)
 {
 	if(a >= b) throw std::invalid_argument("a must be less than b");
-	return a + (long)((b-a+1) * (*this)());
+	double r = (*this)();
+	return a + (long)((b-a+1) * r);
 }
 
 double Random::exponential(double mu)
 {
 	if(mu <= 0.0) throw std::domain_error("mu must be greater than 0");
-	return -mu * std::log(1.0 - (*this)());
+	double r = (*this)();
+	return -(mu * std::log(r));
 }
 
 
 long Random::geometric(double p)
 {
 	if(p >= 1.0 || p <= 0.0) throw std::domain_error("p must be greater than 0 and less than 1");
-	return (long)(log(1- (*this)())/log(p));
+	double r = (*this)();
+	return (long)(log(1- r)/log(p));
 }
 
 bool Random::bernouli(double p)
 {
 	if(p > 1.0 || p < 0.0) throw std::domain_error("p must be between 0 and 1");
-	return (*this)() <= p ? true : false;
+	double r = (*this)();
+	return r <= p ? true : false;
 }
