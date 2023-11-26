@@ -213,7 +213,7 @@ void simulator::run(unsigned int N)
 	
 	#ifdef DEBUG
 		std::cout << "DEBUG: events left in queue:\t" << m_event_list.size() << "\n";
-		std::cout << "DEBUG: peds left in ped queue:\t" << m_ped_queue.size() << "\n";
+		std::cout << "DEBUG: peds left at crosswalk:\t" << m_ped_queue.size() << "\n";
 		std::cout << "DEBUG: peds left in system:\t" << m_peds.size() << "\n";
 		std::cout << "DEBUG: autos left in system:\t" << m_autos.size() << "\n";
 	#endif

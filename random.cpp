@@ -43,6 +43,10 @@ void Random::use_file(const std::string& s)
 {
 	m_rfile.close();
 	m_rfile.open(s);
+	if(!m_rfile.good())
+	{
+		throw std::runtime_error("cannot open file: " + s);
+	}
 }
 
 double Random::uniform(double a, double b)
