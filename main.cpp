@@ -12,11 +12,12 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	
+	//c++ dosen't allow for uninitialized objects, so I have to do this
+	uint8_t buff[sizeof(simulator)] = {0};
+	simulator* sim;
+	
 	try
 	{
-		//c++ dosen't allow for uninitialized objects, so I have to do this
-		uint8_t buff[sizeof(simulator)] = {0};
-		simulator* sim;
 		if(argc >= 5)
 		{
 			sim = new (buff) simulator(argv[2], argv[3], argv[4]);
@@ -29,17 +30,29 @@ int main(int argc, char** argv)
 			sim = new (buff) simulator(); //use builtin prng in debug
 			#endif
 		}
-		
-		unsigned int N = std::atoi(argv[1]);
-		sim->run(N);
-		std::cout << "OUTPUT " << sim->Da().mean() << " ";
-		std::cout << sim->Da().variance() << " ";
-		std::cout << sim->Dp().mean() << "\n";
-		sim->~simulator();
 	}catch(const std::exception& e)
 	{
-		std::cout << "Exception thrown: " << e.what() << "\n";
+		std::cout << "Exception thrown during sim construction\n" << e.what() << "\n";
 		return 2;
 	}
+	
+	unsigned int N = std::atoi(argv[1]);
+	try{
+		sim->run(N);
+	}catch(const std::exception& e)
+	{
+		std::cout << "Exception thrown during sim run\n" << e.what() << "\n";
+		return 2;
+	}
+	std::cout << "OUTPUT " << sim->Da().mean() << " ";
+	std::cout << sim->Da().variance() << " ";
+	std::cout << sim->Dp().mean() << "\n";
+	
+	#ifdef DEBUG
+	std::cout << "ped sample count:\t" << sim->Dp().count() << "\n";
+	std::cout << "auto sample count:\t" << sim->Da().count() << "\n";
+	#endif
+	sim->~simulator();
+	
 	return 0;
 }

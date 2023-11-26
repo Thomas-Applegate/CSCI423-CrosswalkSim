@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class simulator; //predeclare
 
@@ -18,13 +19,14 @@ public:
 		ped_exit,
 	};
 	
-	event(double at, Type type, double speed = -1.0, int id = -1) noexcept;
+	event(double at, Type type, double speed = -1.0, int id = -1);
 	
 	double at() const;
 	Type type() const;
 	double speed() const;
 	
 	friend bool operator<(const event& a, const event& b);
+	friend std::ostream& operator<<(std::ostream& os, const event& e);
 private:
 	static int next_id;
 	double m_at;

@@ -1,10 +1,12 @@
 #include "sim.h"
 #include "event.h"
 #include <stdexcept>
+#include <cmath>
 
 entity_info::entity_info(double at, double speed) : at(at), speed(speed) {}
 
 #ifdef DEBUG
+#include <iostream>
 #include <random>
 
 int s_gen_seed()
@@ -45,7 +47,6 @@ void simulator::m_start_green_timer()
 		m_button_pressed = false;
 		m_walk_signal = false;
 		m_color = color::green;
-		m_ped_cross_count = 0;
 		m_green_timer = m_clock + 35.0;
 		m_event_list.emplace(m_green_timer, event::Type::green_expires);
 	}
@@ -55,6 +56,7 @@ void simulator::m_start_yellow_timer()
 	if(m_yellow_timer < 0.0)
 	{
 		m_color = color::yellow;
+		m_ped_cross_count = 0;
 		m_yellow_timer = m_clock + 8.0;
 		m_event_list.emplace(m_yellow_timer, event::Type::yellow_expires);
 	}
@@ -94,6 +96,7 @@ void simulator::run(unsigned int N)
 	while(!m_event_list.empty())
 	{
 		auto current_event = m_event_list.begin();
+		
 		m_clock = current_event->m_at;
 		
 		switch(current_event->m_type)
@@ -136,13 +139,10 @@ void simulator::run(unsigned int N)
 			{
 				if(m_button_random.bernouli(m_button_push_prob()))
 				{
-					m_ped_queue.insert(*current_event);
 					m_button_pressed = true;
-					if(m_green_timer < 0.0) m_start_yellow_timer();
-				}else
-				{
-					m_ped_queue.insert(*current_event);
+					if(m_color == color::green && m_green_timer < 0.0) m_start_yellow_timer();
 				}
+				m_ped_queue.insert(*current_event);
 			}
 			break;
 		case event::Type::ped_impatient:
@@ -157,10 +157,32 @@ void simulator::run(unsigned int N)
 		case event::Type::yellow_expires:
 			m_yellow_timer = -1.0;
 			m_start_red_timer();
+			{
+				double time_left = m_red_timer - m_clock;
+				auto it = m_ped_queue.begin();
+				while(m_ped_cross_count < 20)
+				{
+					if(it != m_ped_queue.end()) break;
+					if(time_left >= 46.0/it->m_speed)
+					{
+						m_ped_cross_count++;
+						m_event_list.emplace(m_clock + 46.0/it->m_speed,
+							event::Type::ped_exit, it->m_speed, it->m_id);
+						it = m_ped_queue.erase(it);
+					}else
+					{
+						it++;
+					}
+				}
+			}
 			break;
 		case event::Type::red_expires:
 			m_red_timer = -1.0;
 			m_start_green_timer();
+			if(!m_button_random.bernouli(std::pow(0.0625, m_ped_queue.size())))
+			{
+				m_button_pressed = true;	
+			}
 			break;
 		case event::Type::auto_exit:
 		{
@@ -188,6 +210,13 @@ void simulator::run(unsigned int N)
 		
 		m_event_list.erase(current_event);
 	}
+	
+	#ifdef DEBUG
+		std::cout << "DEBUG: events left in queue:\t" << m_event_list.size() << "\n";
+		std::cout << "DEBUG: peds left in ped queue:\t" << m_ped_queue.size() << "\n";
+		std::cout << "DEBUG: peds left in system:\t" << m_peds.size() << "\n";
+		std::cout << "DEBUG: autos left in system:\t" << m_autos.size() << "\n";
+	#endif
 }
 
 double simulator::clock() const { return m_clock; }
