@@ -2,6 +2,7 @@
 #include "event.h"
 #include <stdexcept>
 #include <cmath>
+#include <algorithm>
 
 entity_info::entity_info(double at, double speed) : at(at), speed(speed) {}
 
@@ -143,9 +144,24 @@ void simulator::run(unsigned int N)
 					if(m_color == color::green && m_green_timer < 0.0) m_start_yellow_timer();
 				}
 				m_ped_queue.insert(*current_event);
+				m_event_list.emplace(m_clock + 60.0, event::Type::ped_impatient,
+					-1.0, current_event->m_id);
 			}
 			break;
 		case event::Type::ped_impatient:
+			if(!m_button_pressed)
+			{
+				auto it = std::find_if(m_ped_queue.begin(), m_ped_queue.end(),
+					[current_event](const auto& e)
+					{
+						return e.m_id == current_event->m_id;
+					});
+				if(it != m_ped_queue.end())
+				{
+					m_button_pressed = true;
+					if(m_color == color::green && m_green_timer < 0.0) m_start_yellow_timer();
+				}
+			}
 			break;
 		case event::Type::green_expires:
 			m_green_timer = -1.0;
@@ -182,6 +198,11 @@ void simulator::run(unsigned int N)
 			if(!m_button_random.bernouli(std::pow(0.0625, m_ped_queue.size())))
 			{
 				m_button_pressed = true;	
+			}
+			for(const auto& e : m_ped_queue)
+			{
+				m_event_list.emplace(m_clock + 60.0, event::Type::ped_impatient,
+						-1.0, e.m_id);
 			}
 			break;
 		case event::Type::auto_exit:
