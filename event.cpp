@@ -3,12 +3,12 @@
 
 int event::next_id = 0;
 
-event::event(double at, event::Type type, double speed, int id) noexcept
+event::event(double at, event::Type type, double speed, int id)
 	: m_at(at), m_type(type), m_id(id), m_speed(speed)
 {
 	if(at < 0.0)
 	{
-		throw std::domain_error("event at must be positive");
+		throw std::domain_error("event arrival time must be positive");
 	}
 	
 	if(type == Type::auto_arrival || type == Type::ped_arrival)

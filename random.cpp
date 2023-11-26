@@ -1,6 +1,7 @@
 #include "random.h"
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 Random::Random(int seed) : m_prng(seed), m_rfile()
 {
@@ -15,12 +16,15 @@ double Random::operator()()
 {
 	if(m_rfile.is_open()) //usefile
 	{
+		if(m_rfile.eof())
+		{
+			std::cerr << "ERROR: random file is eof\n";
+		}
 		double ret;
 		m_rfile >> ret;
 		return ret;
 	}else{//use prng
-		static std::uniform_real_distribution
-			dist(std::numeric_limits<double>::lowest(), 1.0);
+		std::uniform_real_distribution dist(std::numeric_limits<double>::lowest(), 1.0);
 		return dist(m_prng);
 	}
 }
