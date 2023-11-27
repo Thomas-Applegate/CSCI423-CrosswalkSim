@@ -20,7 +20,8 @@ simulator::simulator() : m_event_list(), m_auto_random(s_gen_seed()),
 	m_ped_random(s_gen_seed()), m_button_random(s_gen_seed()), m_clock(0.0),
 	m_Da(), m_Dp(), m_color(color::green), m_walk_signal(false),
 	m_button_pressed(false), m_green_timer(-1.0), m_yellow_timer(-1.0),
-	m_red_timer(-1.0), m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue() {}
+	m_red_timer(-1.0), m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue(),
+	m_delayed_autos() {}
 #endif
 
 simulator::simulator(const std::string& auto_random, const std::string& ped_random, const std::string& button_random)
@@ -28,7 +29,7 @@ simulator::simulator(const std::string& auto_random, const std::string& ped_rand
 	m_button_random(button_random), m_clock(0.0), m_Da(), m_Dp(),
 	m_color(color::green), m_walk_signal(false), m_button_pressed(false),
 	m_green_timer(-1.0), m_yellow_timer(-1.0), m_red_timer(-1.0),
-	m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue() {}
+	m_ped_cross_count(0), m_peds(), m_autos(), m_ped_queue(), m_delayed_autos() {}
 	
 double simulator::m_compute_ped_delay(entity_info i)
 {
@@ -37,8 +38,7 @@ double simulator::m_compute_ped_delay(entity_info i)
 
 double simulator::m_compute_auto_delay(entity_info i)
 {
-	//TODO
-	return -1.0;
+	return std::abs((m_clock - i.at) - (2586.0/i.speed));
 }
 
 void simulator::m_start_green_timer()
@@ -190,6 +190,18 @@ void simulator::run(unsigned int N)
 						it++;
 					}
 				}
+				for(const auto&[id, entity] : m_autos)
+				{
+					double dist = entity.speed * (m_clock-entity.at);
+					if(dist >= 1314.0 && m_delayed_autos.find(id) == m_delayed_autos.end())
+					{//auto can exit with no delay
+						m_event_list.emplace(entity.at + (2586.0/entity.speed),
+							event::Type::auto_exit, entity.speed, id);
+					}else
+					{
+						m_delayed_autos.emplace(id, entity);
+					}
+				}
 			}
 			break;
 		case event::Type::red_expires:
@@ -204,16 +216,23 @@ void simulator::run(unsigned int N)
 				m_event_list.emplace(m_clock + 60.0, event::Type::ped_impatient,
 						-1.0, e.m_id);
 			}
+			for(const auto&[id, entity] : m_delayed_autos)
+			{
+				double dist = 1479 - (entity.speed*entity.speed)/20.0;
+				double time = entity.speed/10.0 + dist/entity.speed;
+				m_event_list.emplace(m_clock + time, event::Type::auto_exit,
+					entity.speed, id);
+			}
 			break;
 		case event::Type::auto_exit:
 		{
 			auto it = m_autos.find(current_event->m_id);
-			if(it == m_autos.end())
+			if(it != m_autos.end())
 			{
-				throw std::logic_error("auto not found in map, entity_info may have gotten lost");
+				m_Da.insert_data_point(m_compute_auto_delay(it->second));
+				m_delayed_autos.erase(it->first);
+				m_autos.erase(it);
 			}
-			m_Da.insert_data_point(m_compute_auto_delay(it->second));
-			m_autos.erase(it);
 		}
 			break;
 		case event::Type::ped_exit:

@@ -52,6 +52,7 @@ private:
 	std::unordered_map<int, entity_info> m_peds;
 	std::unordered_map<int, entity_info> m_autos;
 	std::set<event> m_ped_queue;
+	std::unordered_map<int, entity_info> m_delayed_autos;
 	
 	double m_compute_ped_delay(entity_info i);
 	double m_compute_auto_delay(entity_info i);
