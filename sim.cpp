@@ -192,14 +192,17 @@ void simulator::run(unsigned int N)
 				}
 				for(const auto&[id, entity] : m_autos)
 				{
-					double dist = entity.speed * (m_clock-entity.at);
-					if(dist >= 1314.0 && m_delayed_autos.find(id) == m_delayed_autos.end())
-					{//auto can exit with no delay
-						m_event_list.emplace(entity.at + (2586.0/entity.speed),
-							event::Type::auto_exit, entity.speed, id);
-					}else
+					if(m_delayed_autos.find(id) == m_delayed_autos.end())
 					{
-						m_delayed_autos.emplace(id, entity);
+						double dist = entity.speed * (m_clock-entity.at);
+						if(dist >= 1314.0)
+						{//auto can exit with no delay
+							m_event_list.emplace(entity.at + (2586.0/entity.speed),
+								event::Type::auto_exit, entity.speed, id);
+						}else
+						{
+							m_delayed_autos.emplace(id, entity);
+						}
 					}
 				}
 			}
@@ -219,7 +222,7 @@ void simulator::run(unsigned int N)
 			for(const auto&[id, entity] : m_delayed_autos)
 			{
 				double dist = 1479 - (entity.speed*entity.speed)/20.0;
-				double time = entity.speed/10.0 + dist/entity.speed;
+				double time = 2*(entity.speed/10.0) + dist/entity.speed;
 				m_event_list.emplace(m_clock + time, event::Type::auto_exit,
 					entity.speed, id);
 			}
