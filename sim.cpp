@@ -38,7 +38,7 @@ double simulator::m_compute_ped_delay(entity_info i)
 
 double simulator::m_compute_auto_delay(entity_info i)
 {
-	return std::abs((m_clock - i.at) - (2586.0/i.speed));
+	return (m_clock - i.at) - (2586.0/i.speed);
 }
 
 void simulator::m_start_green_timer()
@@ -192,14 +192,17 @@ void simulator::run(unsigned int N)
 				}
 				for(const auto&[id, entity] : m_autos)
 				{
-					double dist = entity.speed * (m_clock-entity.at);
-					if(dist >= 1314.0 && m_delayed_autos.find(id) == m_delayed_autos.end())
-					{//auto can exit with no delay
-						m_event_list.emplace(entity.at + (2586.0/entity.speed),
-							event::Type::auto_exit, entity.speed, id);
-					}else
+					if(m_delayed_autos.find(id) == m_delayed_autos.end())
 					{
-						m_delayed_autos.emplace(id, entity);
+						double dist = entity.speed * (m_clock-entity.at);
+						if(dist >= 1314.0)
+						{//auto can exit with no delay
+							m_event_list.emplace(entity.at + (2586.0/entity.speed),
+								event::Type::auto_exit, entity.speed, id);
+						}else
+						{
+							m_delayed_autos.emplace(id, entity);
+						}
 					}
 				}
 			}
