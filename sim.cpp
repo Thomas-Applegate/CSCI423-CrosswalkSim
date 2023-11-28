@@ -220,7 +220,7 @@ void simulator::run(unsigned int N)
 			}
 			for(const auto&[id, entity] : m_delayed_autos)
 			{
-				double dist = 1305 - (entity.speed*entity.speed)/20.0;
+				double dist = 1314.0 - (entity.speed*entity.speed)/20.0;
 				double time = entity.speed/10.0 + dist/entity.speed;
 				m_event_list.emplace(m_clock + time, event::Type::auto_exit,
 					entity.speed, id);
