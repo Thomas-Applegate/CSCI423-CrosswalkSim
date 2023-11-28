@@ -196,6 +196,7 @@ void simulator::run(unsigned int N)
 					{
 						double dist_now = entity.speed * (m_clock-entity.at);
 						double dist_green = entity.speed * (m_red_timer-entity.at);
+						dist_green -= (entity.speed*entity.speed)/20.0;
 						if(dist_now >= 1314.0)
 						{//auto can exit with no delay
 							m_event_list.emplace(entity.at + (2586.0/entity.speed),
