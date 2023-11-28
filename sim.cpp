@@ -200,7 +200,7 @@ void simulator::run(unsigned int N)
 						{//auto can exit with no delay
 							m_event_list.emplace(entity.at + (2586.0/entity.speed),
 								event::Type::auto_exit, entity.speed, id);
-						}else if(dist_green <= 1281.0)
+						}else if(dist_green > 1281.0)
 						{
 							m_delayed_autos.emplace(id, entity);
 						}//else do nothing
