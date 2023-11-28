@@ -49,8 +49,8 @@ int main(int argc, char** argv)
 	std::cout << sim->Dp().mean() << "\n";
 	
 	#ifdef DEBUG
-	std::cout << "ped sample count:\t" << sim->Dp().count() << "\n";
-	std::cout << "auto sample count:\t" << sim->Da().count() << "\n";
+	std::cout << "DEBUG: ped sample count:\t" << sim->Dp().count() << "\n";
+	std::cout << "DEBUG: auto sample count:\t" << sim->Da().count() << "\n";
 	#endif
 	sim->~simulator();
 	
