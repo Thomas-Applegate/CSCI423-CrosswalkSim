@@ -192,20 +192,17 @@ void simulator::run(unsigned int N)
 				}
 				for(const auto&[id, entity] : m_autos)
 				{
-					if(m_delayed_autos.find(id) == m_delayed_autos.end())
+					double dist_now = entity.speed * (m_clock-entity.at);
+					double dist_green = entity.speed * (m_red_timer-entity.at);
+					double brake_dist = (entity.speed*entity.speed)/20.0;
+					if(dist_now >= 1314.0)
+					{//auto can exit with no delay
+						m_event_list.emplace(entity.at + (2586.0/entity.speed),
+							event::Type::auto_exit, entity.speed, id);
+					}else if(dist_green > 1281.0 - brake_dist)
 					{
-						double dist_now = entity.speed * (m_clock-entity.at);
-						double dist_green = entity.speed * (m_red_timer-entity.at);
-						dist_green -= (entity.speed*entity.speed)/20.0;
-						if(dist_now >= 1314.0)
-						{//auto can exit with no delay
-							m_event_list.emplace(entity.at + (2586.0/entity.speed),
-								event::Type::auto_exit, entity.speed, id);
-						}else if(dist_green > 1281.0)
-						{
-							m_delayed_autos.emplace(id, entity);
-						}//else do nothing
-					}
+						m_delayed_autos.emplace(id, entity);
+					}//else do nothing
 				}
 			}
 			break;
@@ -223,11 +220,12 @@ void simulator::run(unsigned int N)
 			}
 			for(const auto&[id, entity] : m_delayed_autos)
 			{
-				double dist = 1479 - (entity.speed*entity.speed)/20.0;
+				double dist = 1314 - (entity.speed*entity.speed)/20.0;
 				double time = entity.speed/10.0 + dist/entity.speed;
 				m_event_list.emplace(m_clock + time, event::Type::auto_exit,
 					entity.speed, id);
 			}
+			m_delayed_autos.clear();
 			break;
 		case event::Type::auto_exit:
 		{
@@ -235,7 +233,6 @@ void simulator::run(unsigned int N)
 			if(it != m_autos.end())
 			{
 				m_Da.insert_data_point(m_compute_auto_delay(it->second));
-				m_delayed_autos.erase(it->first);
 				m_autos.erase(it);
 			}
 		}
