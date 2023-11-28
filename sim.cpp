@@ -194,15 +194,16 @@ void simulator::run(unsigned int N)
 				{
 					if(m_delayed_autos.find(id) == m_delayed_autos.end())
 					{
-						double dist = entity.speed * (m_clock-entity.at);
-						if(dist >= 1314.0)
+						double dist_now = entity.speed * (m_clock-entity.at);
+						double dist_green = entity.speed * (m_red_timer-entity.at);
+						if(dist_now >= 1314.0)
 						{//auto can exit with no delay
 							m_event_list.emplace(entity.at + (2586.0/entity.speed),
 								event::Type::auto_exit, entity.speed, id);
-						}else
+						}else if(dist_green <= 1281.0)
 						{
 							m_delayed_autos.emplace(id, entity);
-						}
+						}//else do nothing
 					}
 				}
 			}
