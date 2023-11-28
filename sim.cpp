@@ -195,11 +195,11 @@ void simulator::run(unsigned int N)
 					double dist_now = entity.speed * (m_clock-entity.at);
 					double dist_green = entity.speed * (m_red_timer-entity.at);
 					double brake_dist = (entity.speed*entity.speed)/20.0;
-					if(dist_now >= 1314.0)
+					if(dist_now > 1314.0)
 					{//auto can exit with no delay
 						m_event_list.emplace(entity.at + (2586.0/entity.speed),
 							event::Type::auto_exit, entity.speed, id);
-					}else if(dist_green > 1281.0 - brake_dist)
+					}else if(dist_green > 1281.0)
 					{
 						m_delayed_autos.emplace(id, entity);
 					}//else do nothing
@@ -220,7 +220,7 @@ void simulator::run(unsigned int N)
 			}
 			for(const auto&[id, entity] : m_delayed_autos)
 			{
-				double dist = 1314.0 - (entity.speed*entity.speed)/20.0;
+				double dist = 1305.0 - (entity.speed*entity.speed)/20.0;
 				double time = entity.speed/10.0 + dist/entity.speed;
 				m_event_list.emplace(m_clock + time, event::Type::auto_exit,
 					entity.speed, id);
